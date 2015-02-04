@@ -46,8 +46,8 @@ However, surve
 
 Our problem can be modeled in an undirected graph $G=(V,E)$, $V=\{v_1,v_2,\ldots,v_n\}$ denotes the set of agents. $e_{ij}\in E$ denotes an edge between $v_i$ and $v_j$.
 The goal of the matching is to maximize cardinality. Each time, the system prob a pair of agents $v_i$ and $v_j$ with an edge $e_{ij}$ connecting them. 
-(1) If $v_i$ and $v_j$ accept to match with each other, both of the two agents are removed from the market.
-(2) If $v_i$ and $v_j$ do not accept, the system knows that they cannot match and removes $e_{ij}$ from $E$.
+(1) If $v_i$ and $v_j$ accept to match with each other with $p$ probability, both of the two agents are removed from the market.
+(2) If $v_i$ and $v_j$ do not accept with $1-p$ probability, the system knows that they cannot match and removes $e_{ij}$ from $E$.
 
 \section{ESD algorithm}
 
@@ -59,7 +59,7 @@ The outline is described In Algorithm \ref{alg:esd}.
 	\label{alg:esd}
 	\begin{algorithmic}[1]
 		\Require
-		A sorted array of $E$, denoted by $S=s_1,s_2,\ldots,s_m$ and a set of vertices $V$.
+		A sorted array of $E$, denoted by $S=s_1,s_2,\ldots,s_m$ and the set of vertices $V$.
 		\Ensure A set of disjoint edges $A$, such that each two agents connected by an edge in $A$ agree to match. 
 		\State $A=\emptyset$
 		\For $i=1,2,\ldots,m$
@@ -76,11 +76,18 @@ The outline is described In Algorithm \ref{alg:esd}.
 	\end{algorithmic}
 \end{algorithm}
 
-Algorithm \ref{alg:esd} is quite straightforward. The system just pick edges one by one in some order and try to match the current edge. Our goal is to maximize the expected size of the output set $A$.
+Algorithm \ref{alg:esd} is quite straightforward. The system just picks edges one by one in some order (denoted by $S$) and try to match the current edge. Our goal is to maximize the expected size of the output set $A$.
 
 In Algorithm \ref{alg:esd}, The generating of array $S$ is not mentioned.
 Even though we find the $S$ that can maximize the expected size of $A$, the current matching policy may not be optimal.
-However, ESD has the following advantages that 
+However, ESD has the following advantages that motivates us to find a good policy based on it.
+
+The most important advantage is that given $S$ the expected size of $A$ can be solved. It is not natural for other policies for optimizing stochastic matching. The expected cardinality of the matching can be solved as follows.
+\begin{equation}
+E(S)=2\sum_{i=1}^m p*\prod_{j=1}^{i-1}(1-p)^{\delta(s_i,s_j)}
+\end{equation}
+
+$\delta(s_i,s_j)$ is an indicator, which equals to 1 if $s_i$ and $s_j$ are disjoint, otherwise equals to 0.
 
 
 
