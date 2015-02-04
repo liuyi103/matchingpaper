@@ -1,0 +1,93 @@
+%File: formatting-instruction.tex
+\documentclass[letterpaper]{article}
+\usepackage{ijcai15}
+\usepackage{times}
+\usepackage{url}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{slashbox}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{balance}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\newtheorem{theorem}{Theorem}%[section]
+\newtheorem{proposition}{Proposition}
+\newenvironment{proof}{{Proof:}}{\hfill\rule{2mm}{2mm}}
+\newenvironment{mechanism}{Mechanism}{\hfill\rule{2mm}{2mm}}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+\newtheorem{lemma}{Lemma}
+\newtheorem{property}{Property}
+
+\title {Stochastic matching in simple settings}
+\author {Someone}
+ \begin{document}
+% The file aaai.sty is the style file for AAAI Press
+% proceedings, working notes, and technical reports.
+%
+
+\maketitle
+\begin{abstract}
+Motivated by applications like kidney exchange, recommendation system  and online dating, we study a matching problem with query-commit process.
+In this setting, a centralized system allocates agents into pairs. If a pair of agents accept their assignments, they are matched and leave the market.
+Otherwise, they will stay in the market.
+Most previous work focus on giving worst case guarantee on different settings. 
+However, surve
+ 
+
+
+\end{abstract}
+
+\section{Introduction}
+\section{The setting}
+
+Our problem can be modeled in an undirected graph $G=(V,E)$, $V=\{v_1,v_2,\ldots,v_n\}$ denotes the set of agents. $e_{ij}\in E$ denotes an edge between $v_i$ and $v_j$.
+The goal of the matching is to maximize cardinality. Each time, the system prob a pair of agents $v_i$ and $v_j$ with an edge $e_{ij}$ connecting them. 
+(1) If $v_i$ and $v_j$ accept to match with each other, both of the two agents are removed from the market.
+(2) If $v_i$ and $v_j$ do not accept, the system knows that they cannot match and removes $e_{ij}$ from $E$.
+
+\section{ESD algorithm}
+
+To maximize the number of matched agents, we apply edge serial dictatorship algorithm (ESD).
+The outline is described In Algorithm \ref{alg:esd}.
+
+\begin{algorithm}
+	\caption{ESD algorithm}
+	\label{alg:esd}
+	\begin{algorithmic}[1]
+		\Require
+		A sorted array of $E$, denoted by $S=s_1,s_2,\ldots,s_m$ and a set of vertices $V$.
+		\Ensure A set of disjoint edges $A$, such that each two agents connected by an edge in $A$ agree to match. 
+		\State $A=\emptyset$
+		\For $i=1,2,\ldots,m$
+		\State Let $v_x$ and $v_y$ be the two agents connected by $s_i$
+		\If $v_x\in V$ and $v_y\in V$
+		\State Prob $v_x$ and $v_y$ whether they agree to match with each other.
+		\If Both $v_x$ and $v_y$ accept to match
+		\State Put $s_i$ into $A$
+		\State Remove $v_x$ and $v_y$ from $V$
+		\EndIf
+		\EndIf
+		\EndFor
+		\State Outputs $A$ as the set of matched edges.
+	\end{algorithmic}
+\end{algorithm}
+
+Algorithm \ref{alg:esd} is quite straightforward. The system just pick edges one by one in some order and try to match the current edge. Our goal is to maximize the expected size of the output set $A$.
+
+In Algorithm \ref{alg:esd}, The generating of array $S$ is not mentioned.
+Even though we find the $S$ that can maximize the expected size of $A$, the current matching policy may not be optimal.
+However, ESD has the following advantages that 
+
+
+
+\newpage
+\bibliographystyle{named}
+\bibliography{matching}
+
+\end{document}
+
+
