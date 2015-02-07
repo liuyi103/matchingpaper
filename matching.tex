@@ -30,10 +30,10 @@
 
 \maketitle
 \begin{abstract}
-This paper studies a simplified version of stochastic matching proposed in \cite{chen2009approximating}.
-Previous study want to find the optimal policy for a matching system to maximize the cardinality of a matching.
+This paper studies a simplified version of the stochastic matching proposed in \cite{chen2009approximating}.
+Previous study want to find the optimal policy for a matching system to maximize the cardinality of a matching. 
 In that setting, an agent may reject the assigned candidate (with a certain probability) and stay in the market or leave.
-Finding the optimum policy to match meets great difficulty mainly from two aspects.
+Finding the optimum policy to match meets great difficulties mainly from two aspects.
 First, there is no evidence that the optimal policy can be expressed in polynomial space.
 Second, collecting the acceptance ratio of each pair usually incurs considerable costs.
 
@@ -48,10 +48,17 @@ Finally, in the experimental part, we compare methods to solve even larger graph
 \section{Introduction}
 
 Motivated by applications like kidney exchange and online dating, \cite{chen2009approximating} defines stochastic matching.
+The goal to maximize the cardinality of a stochastic matching.
+The problem can be modeled in a graph.
+Any edge has a probability to be fake. (In our work, we assume that these probabilities are identical.)
+When a fake edge is probed to match, it rejects the prob and the edge is removed from the graph.
+Otherwise, it accepts the prob and both ends of the edge are removed from the graph.
 They show a greedy algorithm with 0.25 approximation compared to the optimal algorithm.
 The approximation ratio was improved by \cite{adamczyk2011improved,costello2012stochastic}.
-\cite{goel2012matching} 
-\cite{feldman2009online}
+When compared to the offline optimal, this problem is closely related to the randomized greedy matching problem.
+\cite{poloczek2012randomized,aronson1995randomized} show a greedy algorithm that can match more than one half agents and
+\cite{goel2012matching} improve the lower bound significantly.
+
 
 The current setting faces two main drawbacks to prevent it from practical use.
 
