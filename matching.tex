@@ -190,18 +190,63 @@ This notation is not conflict with the previous definition.
 An edge $e^i$ may denote the same meaning as $e_{jk}$.
 Now, we are ready to define the variables in our setting.
 \begin{itemize}
-	\item $\delta_{ij}(i,j\in\{1,2,\ldots,m\})$ denotes an indicator of $e_i$ is probed before $e_j$ and they have a common vertex (just as mentioned before). If both conditions are satisfied $\delta_{ij}=1$, otherwise $\delta_{ij}=0$.
-	\item $o_i(i\in\{1,2,\ldots,m\})$ denotes the number of edges that are probed before $e_i$ and have a common vertex as $e_i$. By definition, we have $o_i=\sum_{j=1}^{m}\delta_{ji}$. This equation is also used as a constraint in the ILP.
-	\item $l_{ij}(i,j\in\{1,2,\ldots,m\})$ denotes whether $o_i$ is greater than or equal to $j$. This variable is used to express the objective function of ILP.
+	\item $\delta_{ij}(i,j\in\{1,2,\ldots,m\})$ denotes an indicator of $e_i$ is probed before $e_j$ and they have a common vertex (just as mentioned before). If both conditions are satisfied $\delta_{ij}=1$, otherwise $\delta_{ij}=0$. The value of $\delta_{ij}$ is selected from $\{0,1\}$.
+	\item $o_i(i\in\{1,2,\ldots,m\})$ denotes the number of edges that are probed before $e_i$ and have a common vertex as $e_i$. By definition, we have $o_i=\sum_{j=1}^{m}\delta_{ji}$. This equation is also used as a constraint in the ILP. The value of $o_i$ is selected from nonnegative integers
+	\item $l_{ij}(i,j\in\{1,2,\ldots,m\})$ denotes an indicator for whether $o_i$ is greater than or equal to $j$. This variable is used to express the objective function of ILP. Its value is selected from $\{0,1\}$.
 \end{itemize}
 
 \subsection{Objective function}
 
 The objective of the ILP is to maximize to total number of cardinality, which has been shown in Equation \ref{obj}.
 To express it in the ILP fashion, we write it as follows. The index ``2'' is omitted, thus the objective function becomes the expected number of matched edges.
+
+\begin{eqnarray}
+	obj&=&\sum_{i=1}^{m}p*(1-p)^{o_i}\\
+	&= & p*\sum_{i=1}^{m} ((1-p)^{o_i}-(1-p)^{o_{i}-1}+(1-p)^{o_{i}-1}-\nonumber\\
+	&&(1-p)^{o_{i}-2}+\ldots-(1-p)+(1-p)-1+1)\\
+	&=& mp+p*\sum_{i=1}^{m}\sum_{j=1}^{o_i}((1-p)^j-(1-p)^{j-1})\\
+	&=& mp+p*\sum_{i=1}^{m}\sum_{j=1}^{m}((1-p)^j-(1-p)^{j-1})l_{ij}\label{fobj}
+\end{eqnarray}
+
+In equation \ref{fobj}, the objective function becomes a linear function, such that it can be used in the ILP.
+The current problem is how to make $l_{ij}$ an indicator for $o_i\geq j$.
+
+As stated before, the solution of the ILP only make sense when the objective function $obj$ has been maximized.
+So, we only need to add the following constraint to restrict $l_{ij}$.
 \begin{equation}
-	c=
+o_i\leq j-1+l_{ij}*|E|\label{lcon}
 \end{equation}
+
+In our ILP, $l_{ij}$ only appears in the constraint above and the objective function.
+
+\begin{lemma}
+	When $obj$ has been maximized, $o_i\geq j$ if and only if $l_{ij}=1$.
+\end{lemma}
+\begin{proof}
+	To prove this lemma, we only need to show that the following two cases are impossible when $obj$ is maximized.
+	\begin{itemize}
+		\item $o_i<j$ and $l_{ij}=1$.
+		\item $o_i>j$ and $l_{ij}=0$.
+	\end{itemize}
+	The second case is obviously impossible by Equation \ref{lcon}.
+	
+	If the first case is satisfied and $obj$ is maximized, set $l_{ij}$ to be 0 will increase the $obj$ and all the constraints are still satisfied. A contradiction.
+\end{proof}
+
+\subsection{The ILP}
+Now we are ready to conclude the ILP we used to solve the optimal serial as follows.
+
+\begin{eqnarray}
+\text{Maximize:}&& mp+p*\sum_{i=1}^{m}\sum_{j=1}^{m}((1-p)^j-(1-p)^{j-1})l_{ij}\nonumber\\
+\text{Subject to:}&& 1.~\delta_{ij}+\delta{ji}=1, \forall e_i,e_j\in E, e_i\cap e_j\neq \emptyset \label{con1}\\
+&& 2.~o_i\leq j-1+l_{ij}*|E|, \forall i,j\in \{1,2,\ldots,m\}\nonumber\\
+&& 3.~o_i=\sum_{j=1}^{m}\delta_{ji}, \forall i=1,2,\ldots,m \nonumber
+\end{eqnarray}
+
+In equation \ref{con1}, $e_i\cap e_j\neq \emptyset$ denotes that $e_i$ and $e_j$ have a vertex in common. 
+
+\subsection{title}
+We note that when the objective function is not maximized, the variable corresponds to nothing useful for serial dictatorship.
 
 \newpage
 \bibliographystyle{named}
