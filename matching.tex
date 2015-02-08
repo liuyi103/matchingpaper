@@ -178,7 +178,7 @@ Now, we are ready to relax the solution space.
 Rather than a total order, we only assume that there is a determined order between any two edges with a common vertex.
 We do not have any other constraints on the solution space.
 Then, we will introduce a method that maps the optimal solution of the relaxed-form ILP to the optimal serial $S$ in ESD algorithm.
-The relaxed-form ILP only has $O(|E|^2)$ variables and $O(|E|^2)$ entries in total.
+The relaxed-form ILP only has $O(|E||V|)$ variables and $O(|E||V|)$ entries in total.
 So, it improves the performance significantly.
 
 \subsection{Variable Definition}
@@ -245,8 +245,10 @@ Now we are ready to conclude the ILP we used to solve the optimal serial as foll
 
  $e_i\cap e_j\neq \emptyset$ denotes that $e_i$ and $e_j$ have a vertex in common. 
 In equation \ref{ni} and the objective function, $n_i$ denotes the number of edges that have a common vertex as $v_i$.
-
-We note that the equations, 
+Introducing $n_i$ decreases the number of variables we used.
+Further, we omitted the $\delta_{ij}$'s for disjoint $e_i$ and $e_j$.
+These two steps ensure the number of entries to be $O(|E||V|)$.
+We will discuss the complexity problem later.
 
 \subsection{Mapping to ESD}
 We note that when the objective function is not maximized, the values of variables correspond to nothing useful for serial dictatorship.
