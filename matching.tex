@@ -219,7 +219,7 @@ o_i\leq j-1+l_{ij}*|E|\label{lcon}
 
 In our ILP, $l_{ij}$ only appears in the constraint above and the objective function.
 
-\begin{lemma}
+\begin{lemma}\label{lmm}
 	When $obj$ has been maximized, $o_i\geq j$ if and only if $l_{ij}=1$.
 \end{lemma}
 \begin{proof}
@@ -245,8 +245,46 @@ Now we are ready to conclude the ILP we used to solve the optimal serial as foll
 
 In equation \ref{con1}, $e_i\cap e_j\neq \emptyset$ denotes that $e_i$ and $e_j$ have a vertex in common. 
 
-\subsection{title}
-We note that when the objective function is not maximized, the variable corresponds to nothing useful for serial dictatorship.
+\subsection{Mapping to ESD}
+We note that when the objective function is not maximized, the values of variables correspond to nothing useful for serial dictatorship.
+However, when the objective function, things become different.
+Now, we are going to show how to map the solution of the ILP to the optimal sequence $S$ for ESD.
+The method is as follows.
+
+\textbf{Mapping process: }First, we define a function $o$ satisfying $o(e_i)=o_i^*$. 
+Note that we reuse the $o$ for the same meaning.
+$o_i^*$ denotes the value of $o_i$ when the objective function in the ILP has been maximized.
+Then, we sort the $E$ to be a sequence $S^*=s_1^*,s_2^*,\ldots,s_m^*$, satisfying $\forall i,j\in\{1,2,\ldots,m\}$, $o(s_i)<o(s_j)$.
+The $S$ is the optimal sequence for ESP.
+
+Recall the definition of $o_i$, we just sort all the edges according to the number of neighboring edges probed before the edge.
+For short, we call ``the number of neighboring edges probed before the edge'' as the \textit{order} of the edge.
+Now, we are going to demonstrate that $S^*$ is the optimal sequence.
+The rough idea is that the optimal solution of ILP is always implementable by ESD.
+The reason is that an edge always probed earlier than one with higher order.
+Otherwise, let lower-order edge be probed first can increase the value of the objective function.
+
+Formally, it is stated as follows.
+
+\begin{theorem}
+	The output sequence $S^*$ of our algorithm is the sequence that maximizes the cardinality in the ESD algorithm.
+\end{theorem}
+
+\begin{proof}
+	The proof of this theorem consists of two parts. In the first part, we show that any sequence of edges corresponds to a point in the ILP's solution space. 
+	Then, we show that the sequence constructed by the mapping process corresponds to the optimal solution of the ILP.
+	
+	First, given a sequence of edges $S=s_1,s_2,\ldots,s_m$, we can construct the variables in the ILP as follows.
+	For any $i<j$ and $e_i$ and $e_j$ have a common edge. $delta_{ij}=1$, otherwise $\delta_{ij}=0$.
+	Let $o_i$ equal to $\sum_{j=1}^{m}\delta_{ji}$.
+	$l_j=1$ if and only if $o_i\geq j$.
+	In this way, we have map $S$ to a point in the solution space of the ILP.
+	Further, the value of objective function under this construction is exactly the expected number of matched edges.
+	So we conclude the maximum objective function value is greater than or equal to the maximum expected number of matched edges.
+	
+	Second, we are going to show $S^*$
+\end{proof}
+
 
 \newpage
 \bibliographystyle{named}
