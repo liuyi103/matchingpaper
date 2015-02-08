@@ -201,7 +201,7 @@ The objective of the ILP is to maximize to total number of cardinality, which ha
 To express it in the ILP fashion, we write it as follows. The index ``2'' is omitted, thus the objective function becomes the expected number of matched edges.
 
 \begin{eqnarray}
-	obj&=&\sum_{i=1}^{m}p*(1-p)^{o_i}\\
+	obj&=&\sum_{i=1}^{m}p*(1-p)^{o_i}\label{simple}\\
 	&= & p*\sum_{i=1}^{m} ((1-p)^{o_i}-(1-p)^{o_{i}-1}+(1-p)^{o_{i}-1}-\nonumber\\
 	&&(1-p)^{o_{i}-2}+\ldots-(1-p)+(1-p)-1+1)\\
 	&=& mp+p*\sum_{i=1}^{m}\sum_{j=1}^{o_i}((1-p)^j-(1-p)^{j-1})\\
@@ -237,13 +237,16 @@ In our ILP, $l_{ij}$ only appears in the constraint above and the objective func
 Now we are ready to conclude the ILP we used to solve the optimal serial as follows.
 
 \begin{eqnarray}
-\text{Maximize:}&& mp+p*\sum_{i=1}^{m}\sum_{j=1}^{m}((1-p)^j-(1-p)^{j-1})l_{ij}\nonumber\\
-\text{Subject to:}&& 1.~\delta_{ij}+\delta{ji}=1, \forall e_i,e_j\in E, e_i\cap e_j\neq \emptyset \label{con1}\\
-&& 2.~o_i\leq j-1+l_{ij}*|E|, \forall i,j\in \{1,2,\ldots,m\}\nonumber\\
-&& 3.~o_i=\sum_{j=1}^{m}\delta_{ji}, \forall i=1,2,\ldots,m \nonumber
+\text{Maximize:}&& mp+p*\sum_{i=1}^{m}\sum_{j=1}^{n_i}((1-p)^j-(1-p)^{j-1})l_{ij}\nonumber\\
+\text{Subject to:}&& 1.~\delta_{ij}+\delta_{ji}=1, \forall e_i,e_j\in E, e_i\cap e_j\neq \emptyset \label{con1}\\
+&& 2.~o_i\leq j-1+l_{ij}*|E|,  i=1,2,\ldots,m, j=1,2,,\ldots,n_i\label{ni}\\
+&& 3.~o_i=\sum_{e_j\cap e_i\neq \emptyset,i\neq j}\delta_{ji}, \forall i=1,2,\ldots,m \label{oo}
 \end{eqnarray}
 
-In equation \ref{con1}, $e_i\cap e_j\neq \emptyset$ denotes that $e_i$ and $e_j$ have a vertex in common. 
+ $e_i\cap e_j\neq \emptyset$ denotes that $e_i$ and $e_j$ have a vertex in common. 
+In equation \ref{ni} and the objective function, $n_i$ denotes the number of edges that have a common vertex as $v_i$.
+
+We note that the equations, 
 
 \subsection{Mapping to ESD}
 We note that when the objective function is not maximized, the values of variables correspond to nothing useful for serial dictatorship.
@@ -271,30 +274,68 @@ Formally, it is stated as follows.
 \end{theorem}
 
 \begin{proof}
-	The proof of this theorem consists of two parts. In the first part, we show that any sequence of edges corresponds to a point in the ILP's solution space. 
-	Then, we show that the sequence constructed by the mapping process corresponds to the optimal solution of the ILP.
+	The proof of this theorem consists of two parts. Case (1): We show that any sequence of edges corresponds to a point in the ILP's solution space. This property indicates that the maximum value of the ILP is no smaller than the maximum expected number of matched edges.
+	Case (2): We show that the sequence $S^*$ constructed by the mapping process corresponds to the optimal solution of the ILP.
+	In other words, the expected matched edges of $S^*$ is the same as the maximum value of the objective function. It indicates that the maximum value of the ILP is no bigger than the maximum expected number of matched edges.
 	
-	First, given a sequence of edges $S=s_1,s_2,\ldots,s_m$, we can construct the variables in the ILP as follows.
-	For any $i<j$ and $e_i$ and $e_j$ have a common edge. $delta_{ij}=1$, otherwise $\delta_{ij}=0$.
+	Case (1): Given a sequence of edges $S=s_1,s_2,\ldots,s_m$, we can construct the variables in the ILP as follows.
+	For any $i<j$ and $e_i$ and $e_j$ have a common edge. $\delta_{ij}=1$, otherwise $\delta_{ij}=0$.
 	Let $o_i$ equal to $\sum_{j=1}^{m}\delta_{ji}$.
-	$l_j=1$ if and only if $o_i\geq j$.
-	We call this process as \textit{reverse mapping}.
-	In this way, we have map $S$ to a point in the solution space of the ILP.
+	$l_{ij}=1$ if and only if $o_i\geq j$.
+	We call this process as \textit{reverse mapping process}.
+	In this way, we have map $S$ to a point in the solution space of the ILP. 
 	Further, the value of objective function under this construction is exactly the expected number of matched edges.
 	So we conclude the maximum objective function value is greater than or equal to the maximum expected number of matched edges.
 	
-	Second, we are going to show that $S^*$ corresponds to the optimum solution of the ILP by reverse mapping. 
-	We prove this by contradiction. 
-	According to Lemma \ref{lmm}, in the optimal solution $l_ij$'s are decided by $o_i$'s in the same way as reverse mapping.
-	Further, $o_i$'s are decided by $\delta_{ij}$'s.
-	So, when $\delta_{ij}$'s are fixed in  the optimal solution, all the other variables are fixed.
-	By reverse mapping, if $S^*$ corresponds to the same $\delta_{ij}$'s as the optimum solution, the other variables are also the same.
-	Let the mapping from $s_i^*$'s to $e_i$'s to be $g$, such that $s_i^*=e_{g(i)}$.
-	By contradiction, we assume that in the optimum solution, $\delta_{g(i)g(j)}$ has a different value compared to the $\delta_{g(i)g(j)}$ reverse-mapped from $S^*$. 
-	
-	
-	
-	
+	Case (2): We are going to show that $S^*$ corresponds to the optimum solution of the ILP by reverse mapping. 
+	To prove this, we only need to prove that the values of all the variables are the same for 1. the optimum ILP solution where $S^*$ is mapped from and 2. the variables generated by reverse mapping from $S^*$.
+	Then, we show that we only need to compare the values of $\delta_{ij}$'s.
+	\begin{itemize}
+		\item In the optimal solution, according to Lemma \ref{lmm}, $l_{ij}$'s are decided by $o_i$'s.
+		Further, $o_i$'s are decided by $\delta_{ij}$'s according to the equation \ref{oo}.
+		So, when $\delta_{ij}$'s are fixed in  the optimal solution, the values of all the other variables are fixed.
+		\item For the variables generated by reverse mapping from $S^*$,  $l_{ij}$'s, $o_i$'s and $\delta_{ij}$'s follow the same relationship as the former case. In details, $l_{ij}=1$ if and only if $o_i\geq j$, and $o_i=\sum_{j=1}^{m}\delta_{ji}$. So if the two cases have the same $\delta_{ij}$'s, all the variables are the same.
+	\end{itemize}
+	To prove that the two cases have the same $\delta_{ij}$'s, we need the following lemma.
+	\begin{lemma}\label{lmmcore}
+		In the optimum solution of ILP, if $o_j\leq o_i$, $\delta_{ij}=0$
+	\end{lemma}
+	\begin{proof}
+		We prove this lemma by contradiction.
+		By contradiction, we assume that in the optimum solution, there exist $i$ and $j$ satisfying $o_j\leq o_i$ and $\delta_{ij}=1$.
+		By Lemma \ref{lmm} and Equations \ref{simple} to \ref{fobj}, in the optimum solution, the Equation \ref{simple} is equivalent to the objective function of the ILP.
+		So, in the optimum solution, the value of the objective function is as follows.
+		\begin{equation}
+		obj_1=\sum_{i=1}^m p(1-p)^{o_i}
+		\end{equation}
+		Then, let $\delta_{ij}=0$ and $\delta_{ji}=1$ and keep the other $\delta$'s unchanged.
+		We call the new values of $o_i$ and $o_j$ to be $o_i'$ and $o_j'$.
+		We have $o_j'=o_j-1$ and $o_i'=o_i+1$.
+		Now, we consider the point in the feasible space where $l_{ij}=1$ iff $o_i\geq j$.
+		The value of the objective function at this point is as follows.
+		\begin{eqnarray}
+		obj_2&=& obj_1+p(1-p)^{o_j-1}+p(1-p)^{o_i+1}\nonumber\\&&-p(1-p)^{o_j}-p(1-p)^{o_i}
+		\end{eqnarray} 
+		Thus, we have:
+		\begin{eqnarray}
+		obj_2-obj_1&=& p(1-p)^{o_j-1}+p(1-p)^{o_i+1}\nonumber\\&&-p(1-p)^{o_j}-p(1-p)^{o_i}\nonumber\\
+		&=& p(1-p)^{o_j-1}(1+(1-p)^{o_i-o_j+2}\nonumber\\&& -(1-p)-(1-p)^{o_i-o_j+1})\nonumber\\
+		&>& 0\nonumber
+		\end{eqnarray}
+		So, we find a feasible point whose objective function's value is larger than optimum.
+		A contradiction.
+	\end{proof}
+	Now, we consider a pair of edges $e_i$ and $e_j$. 
+	\begin{itemize}
+		\item If $\delta_{ij}=1$, by Lemma \ref{lmmcore}, $o_i<o_j$. 
+		Then, in $S^*$, $e_i$ is ahead of $e_j$.
+		Then, after reverse mapping, as $e_i$ and $e_j$ have a common vertex and $e_i$ is ahead of $e_j$, $\delta_{ij}=1$.
+		\item If $e_i$ and $e_j$ are disjoint, after mapping and reverse mapping, $\delta_{ij}=0$
+		\item If $\delta_{ij}=0$ but $e_i$ and $e_j$ have a common vertex, $e_j$ is ahead of $e_i$ in $S^*$.
+		After reverse mapping, $\delta_{ij}$ still equals to 0.
+	\end{itemize}
+	So, all the $\delta_{ij}$'s are the same between the optimum solution where $S^*$ is generated from and the feasible point $S^*$ corresponds to in the ILP.
+	Above all, we have finished the proof for the second case. 
 \end{proof}
 
 
