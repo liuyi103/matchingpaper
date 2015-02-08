@@ -278,11 +278,23 @@ Formally, it is stated as follows.
 	For any $i<j$ and $e_i$ and $e_j$ have a common edge. $delta_{ij}=1$, otherwise $\delta_{ij}=0$.
 	Let $o_i$ equal to $\sum_{j=1}^{m}\delta_{ji}$.
 	$l_j=1$ if and only if $o_i\geq j$.
+	We call this process as \textit{reverse mapping}.
 	In this way, we have map $S$ to a point in the solution space of the ILP.
 	Further, the value of objective function under this construction is exactly the expected number of matched edges.
 	So we conclude the maximum objective function value is greater than or equal to the maximum expected number of matched edges.
 	
-	Second, we are going to show $S^*$
+	Second, we are going to show that $S^*$ corresponds to the optimum solution of the ILP by reverse mapping. 
+	We prove this by contradiction. 
+	According to Lemma \ref{lmm}, in the optimal solution $l_ij$'s are decided by $o_i$'s in the same way as reverse mapping.
+	Further, $o_i$'s are decided by $\delta_{ij}$'s.
+	So, when $\delta_{ij}$'s are fixed in  the optimal solution, all the other variables are fixed.
+	By reverse mapping, if $S^*$ corresponds to the same $\delta_{ij}$'s as the optimum solution, the other variables are also the same.
+	Let the mapping from $s_i^*$'s to $e_i$'s to be $g$, such that $s_i^*=e_{g(i)}$.
+	By contradiction, we assume that in the optimum solution, $\delta_{g(i)g(j)}$ has a different value compared to the $\delta_{g(i)g(j)}$ reverse-mapped from $S^*$. 
+	
+	
+	
+	
 \end{proof}
 
 
