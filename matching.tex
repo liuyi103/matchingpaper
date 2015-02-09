@@ -340,6 +340,34 @@ Formally, it is stated as follows.
 	Above all, we have finished the proof for the second case. 
 \end{proof}
 
+\subsection{Complexity analysis}
+
+Even though solving ILP is an NP-Hard problem, instances at a small scale is solvable by many ILP solvers.
+We care about the number of entries in our ILP.
+By direct observation, we find the number of entries can be bounded by $O(|E|^2)$.
+However, with carefully analysis, we reduce it to $O(|V||E|)$.
+
+\begin{theorem}
+	The ILP only has $O(|V||E|)$ entries.
+\end{theorem}
+\begin{proof}
+	In the ILP, each $\delta_{ij}$, $o_i$ or $l_{ij}$  appears no more than 2 times.
+	So, we only need to show that the number of variables is $O(|V||E|)$.
+	\begin{itemize}
+		\item The number of $o_i$'s is $|E|$.
+		\item For each pair of neighboring edges $e_i$ and $e_j$, there are two corresponding variables $\delta_{ij}$ and $\delta_{ji}$. The total number of pairs of neighboring edges can be counted as follows. For an arbitrary edge $e_i$ if $e_j$ and $e_j$ has a common vertex. The common vertex has two alternatives and the other end of $e_j$ has $|E|-2$ alternatives. So, the number of $\delta$'s is $O(|V||E|)$.
+		\item The number of $l_{ij}$'s is exactly the sum of $n_i$'s. Each pair of neighboring edges increases $\sum_{i=1}^m n_i$ by 2. So, the number of $l_{ij}$'s is $O(|V||E|)$.
+	\end{itemize}
+\end{proof}
+\section{Extensions of our algorithm}
+Our algorithm can perform well on small graphs.
+However, for larger graphs, ILP is too slow.
+As our algorithm is the fastest way to get the optimum sequence for serial dictatorship to the best of our knowledge, we need find methods to approximate the optimum sequence for larger graphs.
+
+Further, ESD is a non-adaptive algorithm.
+In other words, during the executing of ESD algorithm, the order stays unchanged without using considering the results of the previous probings.   
+However, based on the ILP, we can also extend the algorithm to an adaptive algorithm.
+
 
 \newpage
 \bibliographystyle{named}
