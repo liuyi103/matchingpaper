@@ -467,10 +467,12 @@ Our results show that our algorithm outperforms naive enumeration significantly 
 In the second part, we compare the revenue with other methods.
 As the running time of all the algorithms are not much relied on the acceptance ratio (we confirm this by some experiments), we set all the acceptance ratio as 0.7.
 
-\subsection{Scalibility}
+\subsection{Scalability}
+
 As there is no previous literature on optimum serial dictatorship in stochastic matching, we compare our algorithm to the most naive algorithm, which enumerates all the permutations of the edges and find the best of them.
 \begin{table}
 	\caption{Running time comparison between Algorithm \ref{alg:full} and the naive algorithm.}
+	\label{tab1}
 	\begin{tabular}{ccccc}
 		\hline
 		n,m,algorithm & maximum & minimum & median & mean\\ \hline
@@ -482,6 +484,42 @@ As there is no previous literature on optimum serial dictatorship in stochastic 
 		6,9,naive & 6.467& 6.271& 6.353&　6.349\\ \hline
 	\end{tabular}
 \end{table}
+
+Table \ref{tab1} shows the running time of Algorithm \ref{alg:full} and the naive algorithm for three cases.
+For each case, we test 20 instances with $n$ as the number of vertices and $m$ as the number of edges.
+``ILP'' and ``naive'' stands for the two algorithms.
+The unit of all the numbers in the table is seconds.
+As the running time of the naive algorithm is $\Theta(|E|!\times |E|^2)$.
+It can be concluded that when the number of edges is greater than 7, Algorithm is significantly faster.
+
+\begin{table}
+	\caption{Running time of Algorithm \ref{alg:full} for larger instances.}
+	\label{tab2}
+	\begin{tabular}{ccccc}
+		\hline
+		n,m & maximum & minimum & median & mean\\ \hline
+		10,14 & 0.781&0.157&0.234&0.314\\
+		10,16 & 9.510&0.281&0.664&1.864\\
+		10,18 & 19.157&2.337&3.447&5.162\\
+		10,20 & 65.872&13.830&17.763&22.424\\
+		10,21 & 523.552&25.045&62.312&101.141\\ \hline
+	\end{tabular}
+\end{table}
+
+Table \ref{tab2} shows the performance of Algorithm \ref{alg:full} on larger cases.
+We find that the worst case running time of our algorithm increase dramatically.
+We set $n=10$, because only under this condition, the graphs with $|V||E|\approx200$ is neither too sparse nor too dense.
+Under such condition, our algorithm can often solve instances with $m=20$ within 1 minutes.
+Although the scalability of our algorithm is far from perfect., it has been much better than enumeration with the help of a highly non-trivial ILP.
+
+\section{Conclusion}
+In the field of stochastic matching, previous study concentrates on worst case bounds, rather than ``optimum''.
+We move forward the first step towards ``optimum'' by a talent ILP construction for the optimum serial dictatorship.
+Our algorithm performs much better than enumeration.
+We show that serial dictatorship can yield very good payoff and can be extended in many ways.
+Serial Dictatorship has many good properties that make it practical.
+Our algorithm can be applied in real world directly, showing the power of artificial intelligence.
+The most important point is that our study shows the possibility of exploring the ``uncertain''` matching world.
 
 
 \newpage
