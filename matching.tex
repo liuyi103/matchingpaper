@@ -237,7 +237,7 @@ In our ILP, $l_{ij}$ only appears in the constraint above and the objective func
 Now we are ready to conclude the ILP we used to solve the optimal serial as follows.
 
 \begin{eqnarray}
-\text{Maximize:}&& mp+p*\sum_{i=1}^{m}\sum_{j=1}^{n_i}((1-p)^j-(1-p)^{j-1})l_{ij}\nonumber\\
+\text{Maximize:}&& mp+p*\sum_{i=1}^{m}\sum_{j=1}^{n_i}((1-p)^j-(1-p)^{j-1})l_{ij}\label{stobj}\\
 \text{Subject to:}&& 1.~\delta_{ij}+\delta_{ji}=1, \forall e_i,e_j\in E, e_i\cap e_j\neq \emptyset \label{con1}\\
 && 2.~o_i\leq j-1+l_{ij}*|E|,  i=1,2,\ldots,m, j=1,2,,\ldots,n_i\label{ni}\\
 && 3.~o_i=\sum_{e_j\cap e_i\neq \emptyset,i\neq j}\delta_{ji}, \forall i=1,2,\ldots,m \label{oo}
@@ -262,6 +262,23 @@ $o_i^*$ denotes the value of $o_i$ when the objective function in the ILP has be
 Then, we sort the $E$ to be a sequence $S^*=s_1^*,s_2^*,\ldots,s_m^*$, satisfying $\forall i,j\in\{1,2,\ldots,m\}$, $o(s_i)<o(s_j)$.
 The $S$ is the optimal sequence for ESP.
 
+\subsection{A summary of our algorithm for optimum serial dictatorship}
+For a better understanding, our algorithm for optimum serial dictatorship is shown in Algorithm \ref{alg:full}.
+The overall idea is to solve the ILP, map to a sequence and run ESD algorithm.
+\begin{algorithm}
+	\caption{Optimum serial dictatorship}
+	\label{alg:full}
+	\begin{algorithmic}[1]
+		\Require
+		A graph $G=(V,E)$
+		\Ensure A set of disjoint edges $A$, such that each two agents connected by an edge in $A$ agree to match and the expected size of $A$ is maximized. 
+		\State Run the ILP shown in Equations \ref{stobj}-\ref{oo} on graph $G$. The value profile for the optimum solution is denoted by $P$. 
+		\State Map $P$ to a sequence $S$ by mapping process. 
+		\State Run Algorithm \ref{alg:esd} on $S$, outputs the matched edges $A$ as output.
+	\end{algorithmic}
+\end{algorithm}
+
+\subsection{The correctness proof}
 Recall the definition of $o_i$, we just sort all the edges according to the number of neighboring edges probed before the edge.
 For short, we call ``the number of neighboring edges probed before the edge'' as the \textit{order} of the edge.
 Now, we are going to demonstrate that $S^*$ is the optimal sequence.
@@ -359,6 +376,7 @@ However, with carefully analysis, we reduce it to $O(|V||E|)$.
 		\item The number of $l_{ij}$'s is exactly the sum of $n_i$'s. Each pair of neighboring edges increases $\sum_{i=1}^m n_i$ by 2. So, the number of $l_{ij}$'s is $O(|V||E|)$.
 	\end{itemize}
 \end{proof}
+
 \section{Extensions of our algorithm}
 Our algorithm can perform well on small graphs.
 However, for larger graphs, ILP is too slow.
@@ -368,6 +386,32 @@ Further, ESD is a non-adaptive algorithm.
 In other words, during the executing of ESD algorithm, the order stays unchanged without using considering the results of the previous probings.   
 However, based on the ILP, we can also extend the algorithm to an adaptive algorithm.
 
+\subsection{Force mapping}
+When the size of the graph is big enough, the ILP can not be solved in an acceptable time limit.
+However, our mapping process can always get a feasible solution.
+
+The rough idea of the force mapping is as follows.
+We set a maximum acceptable time $T$.
+Terminate the ILP at time $T$.
+At that time, the \textit{variable profile} (the values of all the variables) is denoted by $P$ and the corresponding objective value is denoted by $obj$.
+Then, map $P$ to a sequence $S$ by the mapping process.
+$S$ is used as the sequence for ESD algorithm.
+
+\subsection{Improvements on ESD}
+Actually, the payoff of ESD algorithm can be further improved.
+However, such improvements breaks some great properties ESD holds, such as offline executable and deterministic.
+At the same time, these improvements induce more computation.
+
+\subsubsection{Adaptive ESD}
+To improve ESD on payoff, we can use adaptive ESD.
+The idea is that,
+\subsubsection{Skip ratio}
+\cite{bansal2012lp} gets some bounds on weighted stochastic matching.
+A technique they used to get bounds is adding a skip rate when matching following a sequence.
+
+In our work, we can also add a skip ratio $s$.
+When running the ESD algorithm, each time, we skip the current edge with probability $s$.
+In this way, it is possible to get a higher payoff.
 
 \newpage
 \bibliographystyle{named}
