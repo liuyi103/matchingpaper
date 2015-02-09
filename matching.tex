@@ -271,7 +271,7 @@ The overall idea is to solve the ILP, map to a sequence and run ESD algorithm.
 	\begin{algorithmic}[1]
 		\Require
 		A graph $G=(V,E)$
-		\Ensure A set of disjoint edges $A$, such that each two agents connected by an edge in $A$ agree to match and the expected size of $A$ is maximized. 
+		\Ensure A set of disjoint edges $A$, such that each two agents connected by an edge in $A$ agree to match and the expected size of $A$ is maximized among solutions from edge serial dictatorship. 
 		\State Run the ILP shown in Equations \ref{stobj}-\ref{oo} on graph $G$. The value profile for the optimum solution is denoted by $P$. 
 		\State Map $P$ to a sequence $S$ by mapping process. 
 		\State Run Algorithm \ref{alg:esd} on $S$, outputs the matched edges $A$ as output.
@@ -397,21 +397,68 @@ At that time, the \textit{variable profile} (the values of all the variables) is
 Then, map $P$ to a sequence $S$ by the mapping process.
 $S$ is used as the sequence for ESD algorithm.
 
-\subsection{Improvements on ESD}
-Actually, the payoff of ESD algorithm can be further improved.
+\subsection{Improvements on optimum serial dictatorship}
+Actually, the payoff of Algorithm \ref{alg:full} can be further improved.
 However, such improvements breaks some great properties ESD holds, such as offline executable and deterministic.
 At the same time, these improvements induce more computation.
 
 \subsubsection{Adaptive ESD}
-To improve ESD on payoff, we can use adaptive ESD.
-The idea is that,
+To improve Algorithm \ref{alg:full} on payoff, we can use adaptive ESD.
+The rough idea is that only use Algorithm \ref{alg:full} to decide the next $k$ probed edges, and repeat this process. It is formally stated in Algorithm \ref{alg:adapt}.
+
+\begin{algorithm}
+	\caption{Optimum serial dictatorship}
+	\label{alg:adapt}
+	\begin{algorithmic}[1]
+		\Require
+		A graph $G=(V,E)$ and a positive integer $k$.
+		\Ensure A set of disjoint edges $A$, such that every edge in $A$ exists.
+		\State $A=\emptyset$
+		\While{$G$ is non-empty}
+		\State Run the ILP shown in Equations \ref{stobj}-\ref{oo} on graph $G$. The variable profile for the optimum solution is denoted by $P$. 
+		\State Map $P$ to a sequence $S=s_1,s_2,\ldots$ by mapping process. 
+		\For{$i=1,2,\ldots,min(k,length(S))$}
+		\If{Both ends of $s_i$ are still in $G$}
+		\State Prob $s_i$ to match
+		\If {$s_i$ is proved to be exist.}
+		\State Remove the two ends of $s_i$ and all edges attached to them from $G$.
+		\State Add $s_i$ to $A$
+		\Else
+		\State Remove $s_i$ from $G$
+		\EndIf
+		\EndIf
+		\EndFor
+		\EndWhile
+		\State Output $A$
+	\end{algorithmic}
+\end{algorithm}
+
+When $k$ is small, the algorithm \ref{alg:adapt} tends to output a better solution but costs more time to compute. 
+\begin{theorem}
+	For any positive integer $k$, the payoff of Algorithm \ref{alg:adapt} is same as or better than the payoff of Algorithm \ref{alg:full}
+\end{theorem}
+The rough idea of the proof is as follows. We prove this by induction. 
+
+The drawback of \ref{alg:adapt} is that it needs interaction with computer.
+While Algorithm \ref{alg:full} can be totally offline with a more clear scheme.
 \subsubsection{Skip ratio}
 \cite{bansal2012lp} gets some bounds on weighted stochastic matching.
 A technique they used to get bounds is adding a skip rate when matching following a sequence.
 
-In our work, we can also add a skip ratio $s$.
-When running the ESD algorithm, each time, we skip the current edge with probability $s$.
+we can also add a skip ratio $r (0\leq r<1)$ to algorithm \ref{alg:full}.
+When running the ESD algorithm, each time, we skip each edge with probability $r$.
 In this way, it is possible to get a higher payoff.
+
+If we directly add $r$ to our ILP, it will incurs great difficulty for solving it.
+So, we only add the $r$ on the optimum sequence.
+Then the value of the payoff on a sequence $S$ is as follows.
+\begin{equation}
+obj(s)=\sum_{i=1}^{m}(1-r)p(1-(1-r)p)^{\sum_{j=1}^{i}\delta(s_j,s_j)}
+\end{equation} 
+
+In practice, this methods only have little effect on the payoff.
+Further, this method is not deterministic.
+
 
 \newpage
 \bibliographystyle{named}
