@@ -459,6 +459,30 @@ obj(s)=\sum_{i=1}^{m}(1-r)p(1-(1-r)p)^{\sum_{j=1}^{i}\delta(s_j,s_j)}
 In practice, this methods only have little effect on the payoff.
 Further, this method is not deterministic.
 
+\section{Experiments}
+
+our experimental results consists of two parts.
+In the first part, we show the running time performance of Algorithm \ref{alg:full}.
+Our results show that our algorithm outperforms naive enumeration significantly and can scale up to the case where $|V||E|=200$.
+In the second part, we compare the revenue with other methods.
+As the running time of all the algorithms are not much relied on the acceptance ratio (we confirm this by some experiments), we set all the acceptance ratio as 0.7.
+
+\subsection{Scalibility}
+As there is no previous literature on optimum serial dictatorship in stochastic matching, we compare our algorithm to the most naive algorithm, which enumerates all the permutations of the edges and find the best of them.
+\begin{table}
+	\caption{Running time comparison between Algorithm \ref{alg:full} and the naive algorithm.}
+	\begin{tabular}{ccccc}
+		\hline
+		n,m,algorithm & maximum & minimum & median & mean\\ \hline
+		5,6,ILP & 0.085& 0.043& 0.054& 0.056\\
+		5,6,naive & 0.007& 0.006& 0.007&　0.007\\
+		6,8,ILP & 0.131& 0.062& 0.099& 0.099\\
+		6,8,naive & 0.587& 0.565& 0.575&　0.575\\
+		6,9,ILP & 0.245& 0.078& 0.128& 0.130\\
+		6,9,naive & 6.467& 6.271& 6.353&　6.349\\ \hline
+	\end{tabular}
+\end{table}
+
 
 \newpage
 \bibliographystyle{named}
