@@ -31,41 +31,51 @@
 \maketitle
 \begin{abstract}
 This paper studies a simplified version of the stochastic matching proposed in \cite{chen2009approximating}.
-Previous study want to find the optimal policy for a matching system to maximize the cardinality of a matching. 
-In that setting, an agent may reject the assigned candidate (with a certain probability) and stay in the market or leave.
-Finding the optimum policy to match meets great difficulties mainly from two aspects.
+The stochastic matching problem is modeled in a graph $G=(V,E)$. 
+Each edge $e_i$ has a probability to be existing. 
+The market probs edges one by one (edge-probing setting).
+If an edge exists, it will be matched and both ends will leave the market.
+Otherwise, the edge can not be matched and one end of the edge will stay in the market only if she still has patience.
+The goal is to match more existing edges.
+Previous literature focus on finding bounds on settings with many parameters.
+However, these bounds are usually meaningless in simple settings.
+Even in simple settings, finding the optimum policy to match meets great difficulties mainly from two aspects.
 First, there is no evidence that the optimal policy can be expressed in polynomial space.
-Second, collecting the acceptance ratio of each pair usually incurs considerable costs.
+Second, collecting the probabilities usually incurs considerable costs.
 
-To express a policy efficiently and solve the optimum solution efficiently, we choose serial dictatorship and consider the case where the acceptance ratios are identical for each pair.
-This paper aims to give an algorithm with a graph and the acceptance ratio as input and outputs a optimum order for serial dictatorship.
-We first describe a straightforward integer linear programming with $O(|E|^4)$ entries.
-Then, we reduce the number of entries to $O(|E|^2)$ by an important observation.
-Finally, in the experimental part, we compare methods to solve even larger graphs.
+We study a novel setting where the market does not know whether an edge exists after matching and the patience is defined in a special way.
+The goal in our setting is to find the optimum sequence for serial dictatorship that maximizes the number of matched edges.
+We solve this problem via integer linear programming (ILP).
+Our well designed ILP uses only $O(|V||E|)$ entries and outperforms the enumeration algorithm a lot.
+Actually, our setting is related to a quite general setting  at a certain degree.
+Although our work is for a quite specific setting, we move forward the first solid step towards ``optimum'' in the field of stochastic matching.
 
 \end{abstract}
 
 \section{Introduction}
 
-Motivated by applications like kidney exchange and online dating, \cite{chen2009approximating} defines stochastic matching.
-The goal to maximize the cardinality of a stochastic matching.
-The problem can be modeled in a graph.
-Any edge has a probability to be fake. (In our work, we assume that these probabilities are identical.)
-When a fake edge is probed to match, it rejects the prob and the edge is removed from the graph.
-Otherwise, it accepts the prob and both ends of the edge are removed from the graph.
-They show a greedy algorithm with 0.25 approximation compared to the optimal algorithm.
-The approximation ratio was improved by \cite{adamczyk2011improved,costello2012stochastic}.
-When compared to the offline optimal, this problem is closely related to the randomized greedy matching problem.
-\cite{poloczek2012randomized,aronson1995randomized} show a greedy algorithm that can match more than one half agents and
-\cite{goel2012matching} improve the lower bound significantly.
+An active line of study on matching problems has been conducted since 1970s~\cite{keylist} with applications on stable marriage problems, stable roommate problems, kidney exchange etc.
+In traditional matching settings, properties like stability, strategy-proof and social welfare maximizing are desired.
+However, during the last decade, inspired by applications such as kidney exchange and online dating, more attention has been attracted to stochastic settings.
 
-
-The current setting faces two main drawbacks to prevent it from practical use.
+\cite{chen2009approximating} defines a model ``stochastic matching'' and starts an active line of study on worst case bounds on related problems\cite{adamczyk2011improved,costello2012stochastic,poloczek2012randomized,goel2012matching,bansal2012lp}.
+They share some common assumptions in their models.
+The stochastic matching is modeled in a graph $G=(V,E)$.
+Each edge $e$ has a probability to be existing.
+Otherwise, the edge is fake.
+There exists a matching system that can prob an edge to match.
+When an existing edge is probed, it will confirm the match and will never be separated.
+When a fake edge is probed, it will deny the match and the edge is removed from the graph.
+The goal of the matching system is to maximize the number of matched edges or the total weight. 
+Many variants have been studied in this setting, such as adding weights on vertices, probing an edge or a matching, setting the patiences, matching with eyes closed and matching in bipartite or general graphs\footnote{Often, more than one variants are usually considered in one paper at the same time, so we list the related work at the beginning of this paragraph.}.
+All these study focus on finding bounds for the worst case compared to the optimum policy or the offline optimal solution.
+However, for the most simple setting where all the existing probabilities are the same, no weights and no patiences setting, none of the algorithms above can be significantly better than serial dictatorship following a random order.
+The current settings face two main drawbacks that prevent it from practical use.
 
 First, to know the exact probability of a prob being accepted is difficult.
-Typically, in order to know the exact probabilities, the market needs to collect many data and conduct careful analyses on historical data.
-It is worthy in important markets like kidney exchange market~\cite{dickerson2013failure,dickerson2015futurematch}.
-However, in many less important market, collecting acceptance ratios is quite costly and unworthy.
+Typically, in order to know the exact  existing probabilities, the market needs to collect many data and conduct careful analyses on historical data.
+It is worthy in some important markets like kidney exchange market~\cite{dickerson2013failure,dickerson2015futurematch}.
+However, in many less important markets, collecting existing probabilities is quite costly and unworthy.
 Similar to online dating problem, let us consider a friend recommendation problem.
 Someone (called Alice) has many friends, $x$ of them are single boys and $y$ are single girls.
 Alice wants to introduce boys to girls for marriage.
@@ -73,34 +83,45 @@ She wants to maximize the number of matched couples.
 Every boy or girl has some requirements that must be satisfied.
 However, even though a boy and a girl satisfy each other's requirements, they may still not be willing to match.
 In this case, it is hard and costly for Alice to survey the acceptance ratio of each pair.
-Similar problem also appear in other applications like roommate problem~\cite{roth1982incentive}, but never serious considered as far as we know.
+What Alice does have may be the estimated average acceptance ratios of each pair.
+Such applications motivate us to study the settings where all the existing probabilities are unique.
+Similar problems also appear in other applications like roommate problem~\cite{roth1982incentive}, but never serious considered to the best of our knowledge.
 
-Second, as mentioned above, most study focus on giving worst case guarantees, compared both to the optimal solution and the offline optimum. 
+Second, as mentioned above, most study focus on giving worst case bounds. 
 The main difficulty preventing people to desire the optimum solution is that the optimal solution maybe not able to be expressed in polynomial space.
-To solve the stochastic matching problem in practical, there is no evidence that the existing algorithms can work well enough.
+Even though you have already gotten a sequence for serial dictatorship (note that the optimum solution may be be implementable by serial dictatorship), it is still hard to know the expected number of matched edges. 
 
-In this paper, a simplified setting of stochastic matching is considered, which can still be utilized to solve many real life applications.
-We assume that all the edges have the same acceptance ratio.
-This assumption avoid the difficulty in surveying the acceptance probabilities and provides an essential condition for our algorithm.
-As for the expressiveness of the solution, we improve it by serial dictatorship.
-Although, serial dictatorship may reduce the expected number of matched agents, our experimental results demonstrate that the influence is not big.
-With the solution, anyone can conduct the matching without any further help of a computer. 
-One only needs $O(1)$ computation in average for each prob.
-We are going to release our work as an open source tool. 
-With the help of this tool, anyone is able make precise decisions for stochastic matching problems around themselves. 
+Motivated by the two drawbacks above, we study a novel setting with identical existing properties for edges and a P-time solvable expression for the number of expected matched agents.
+For short, we use the \textit{payoff} of a matching to denote the number of expected matched agents.
+Our setting is inspired by boy/girl friends recommendation.
+In our setting, the matching market probs one edge per time.
+The existing probabilities of edges are the same.
+We assume that the market cannot get feedbacks from the matched agents (vertices) in a short time because they are not willing to make it known to others.
+We assume that each agents has two status \textit{active} or \textit{upset}.
+Typically, an agent becomes upset because she is assigned to some matched agent and disappointed to the matching system.
+When an agent becomes upset, she will always be upset and rejects all the probs. 
+When an edge $e_{ij}$ (connecting two agents $v_i$ and $v_j$) is probed,
+\begin{itemize}
+	\item If the two agents $v_i$ and $v_j$ are unmatched, $e_{ij}$ is matched with probability $p$
+	\item  If both $v_i$ and $v_j$ have been matched, nothing happens.
+	\item If $v_i$ (or $v_j$) is unmatched but the other has been matched, $v_i$ becomes upset with probability $p$.
+\end{itemize}
+Our goal is to find the optimum probing sequence.
+
+Actually, our setting is closely related to the setting of stochastic matching with equal existing probabilities, no patiences and no weights, called \textit{the general setting}. On the same graph, the payoff of our algorithm is also the lower bound of the optimum payoff of serial dictatorship in the general setting. 
 
 The following part of this paper is organized as follows. Section 2 defines the serial dictatorship and show some fundamental good properties of it. Section 3 shows the construction of the integer linear programming step by step and prove its correctness. Section 4 explores methods to expand our algorithm to larger graphs. Section 5 shows our experimental results. Section 6 concludes this paper.
 
 
 \section{The settings}
 
-In this section, we will describe our model and the serial dictatorship. After that, some desired properties of serial dictatorship are demonstrated.
+In this section, we will describe our model and the serial dictatorship. After that, some desired properties of serial dictatorship are discussed.
 
 \subsection{The model}
 
-Our problem is modeled in an undirected graph $G=(V,E)$, $V=\{v_1,v_2,\ldots,v_n\}$ denotes the set of agents. $e_{ij}\in E$ denotes an edge between $v_i$ and $v_j$.
-For any edge $e_{ij}\in E$, it has two states, \textit{exist} or \textit{fake}.
-The probability of ``exist'' is a constant $p$.
+Our problem is modeled in an undirected graph $G=(V,E)$, $V=\{v_1,v_2,\ldots,v_n\}$ denotes the set of agents. $e_{ij}\in E$ denotes an edge between $v_i$ and $v_j$. In the following analyses, elements in $E$ are renumbered to be $\{e_1,e_2,\ldots,e_{|E|}\}$. 
+For any edge $e_{ij}\in E$, it has two states, \textit{existing} or \textit{fake}.
+The probability of existing is a constant $p$.
 The goal of the matching is to maximize cardinality. Each time, the system prob a pair of agents $v_i$ and $v_j$ with an edge $e_{ij}$ connecting them. 
 \begin{itemize}
 	\item If $e_{ij}$ exists, then $v_i$ and $v_j$ agree to match with each other, both of the two agents and the edges attached to them are removed from the graph. 
