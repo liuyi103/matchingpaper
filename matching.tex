@@ -122,18 +122,15 @@ In this section, we will describe our model and the serial dictatorship. After t
 Our problem is modeled in an undirected graph $G=(V,E)$, $V=\{v_1,v_2,\ldots,v_n\}$ denotes the set of agents. $e_{ij}\in E$ denotes an edge between $v_i$ and $v_j$. In the following analyses, elements in $E$ are renumbered to be $\{e_1,e_2,\ldots,e_{|E|}\}$. 
 For any edge $e_{ij}\in E$, it has two states, \textit{existing} or \textit{fake}.
 The probability of existing is a constant $p$.
-The goal of the matching is to maximize cardinality. Each time, the system prob a pair of agents $v_i$ and $v_j$ with an edge $e_{ij}$ connecting them. 
-\begin{itemize}
-	\item If $e_{ij}$ exists, then $v_i$ and $v_j$ agree to match with each other, both of the two agents and the edges attached to them are removed from the graph. 
-	The number of matched agents increases by 2.
-	\item If $e_{ij}$ is fake, $v_i$ and $v_j$ refuses to match. The system removes $e_{ij}$ from $E$.
-\end{itemize}
+The goal of the matching is to maximize cardinality.
 
 
 \subsection{ESD algorithm}
 
-To maximize the number of matched agents, we apply \textit{edge serial dictatorship algorithm} (ESD).
-The outline is described In Algorithm \ref{alg:esd}.
+Now, let's consider the optimal policy of the matching market.
+As it will not receive any feedback, there exists a deterministic sequence for serial dictatorship that maximize the payoff.
+In the sequence, all the edges should be contained. Otherwise, we can add an unprobed edge to the end of the sequence to increase payoff.
+The framework of the \textit{edge serial dictatorship algorithm} (ESD) is shown in Algorithm \ref{alg:esd}.
 
 \begin{algorithm}
 	\caption{ESD algorithm}
@@ -157,10 +154,6 @@ The outline is described In Algorithm \ref{alg:esd}.
 	\end{algorithmic}
 \end{algorithm}
 
-Algorithm \ref{alg:esd} is a typical serial dictator algorithm. 
-The system just picks edges one by one in some order (denoted by $S$) and try to match the current edge if both ends of the edge are still in the graph. 
-Our goal is to maximize the expected size of the output set $A$ among all $S$.
-
 \subsection{Desired properties}
 
 We restrict our focus on the serial dictatorship for many reasons.
@@ -177,10 +170,10 @@ c(S)=2*\sum_{i=1}^m p(1-p)^{\sum_{j=1}^{i-1}\delta(s_j,s_i)}
 In equation \ref{obj}, $\delta(s_i,s_j)$ is an indicator of whether $s_j$ appears before $s_i$ and they have a common vertex. In other words, $\delta(s_j,s_i)=1$ only when $s_j$ is probed before $s_i$ and they have a common vertex, otherwise  $\delta(s_j,s_i)=0$. 
 In the integer linear programming, we will use variables $\delta_{ij}$, which holds the same meaning as $\delta(s_i,s_j)$ here.
 
-\section{Optimizing the serial}
+\section{Optimizing the sequence}
 
 Algorithm \ref{alg:esd} has given a framework of serial dictatorship. 
-The problem is how to find the serial  $S$ that maximizing the expected cardinality of the matching.
+The problem is how to find the sequence $S$ that maximizing the payoff.
 In this section, we will introduce the integer linear program (ILP) we used to find the optimum $S$ step by step.
 
 \subsection{Overview of the algorithm}
@@ -189,26 +182,26 @@ The objective function of our ILP is a representation of Equation \ref{obj}.
 As for the constraints, if we faithfully write the constrains according to definition of serial dictatorship and the objective function, we need $O(|E|^4)$ variables in the ILP, which is insufferable. We are not going to discuss in details for this idea.
 
 To reduce the number of variables, we introduce a novel method.
-We first relax the solution space to obtain a relaxed-form ILP.
-Then, we show that the solution of the relaxed-form ILP can be mapped to the optimal serial $S$.
+We first enlarge the solution space to obtain a relaxed-form ILP.
+Then, we show that the solution of the relaxed-form ILP can be mapped to the optimal sequence $S^*$.
 
 The relaxed-form ILP is based on the following observation.
-Given the optimal serial $S$, there is a determined order between any two edge.
+Given the optimal sequence $S^*$, there is a determined order between any two edge.
 For example, for $e_{ij}, e_{ik}\in E$, given $S$, we know that $e_{ij}$ is always probed before $e_{ik}$ or $e_{ik}$ is always before $e_{ij}$.
-Now, we are ready to relax the solution space.
-Rather than a total order, we only assume that there is a determined order between any two edges with a common vertex.
+Now, we are ready to enlarge the solution space.
+Rather than a total order, we only assume that there is a determined order between any two edges with a common vertex (aka. \textit{neighboring edges}).
 We do not have any other constraints on the solution space.
-Then, we will introduce a method that maps the optimal solution of the relaxed-form ILP to the optimal serial $S$ in ESD algorithm.
+Then, we will introduce a method that maps the optimal solution of the relaxed-form ILP to the optimal sequence $S^*$.
 The relaxed-form ILP only has $O(|E||V|)$ variables and $O(|E||V|)$ entries in total.
 So, it improves the performance significantly.
 
 \subsection{Variable Definition}
 
-Three types of variables are used in our ILP\footnote{From here on, all the ``ILP'' refers to the relaxed-form ILP.}.
+Three types of variables are used in our ILP (From here on, all the ``ILP'' refers to the relaxed-form ILP.).
 For a better presentation of our ILP, we give an alias for each element in $E$.
-We number all the edges in $E$ as $e^1,e^2,\ldots,e^m$.
+We number all the edges in $E$ as $e_1,e_2,\ldots,e_m$.
 This notation is not conflict with the previous definition.
-An edge $e^i$ may denote the same meaning as $e_{jk}$.
+An edge $e_i$ may denote the same meaning as $e_{jk}$.
 Now, we are ready to define the variables in our setting.
 \begin{itemize}
 	\item $\delta_{ij}(i,j\in\{1,2,\ldots,m\})$ denotes an indicator of $e_i$ is probed before $e_j$ and they have a common vertex (just as mentioned before). If both conditions are satisfied $\delta_{ij}=1$, otherwise $\delta_{ij}=0$. The value of $\delta_{ij}$ is selected from $\{0,1\}$.
@@ -219,7 +212,7 @@ Now, we are ready to define the variables in our setting.
 \subsection{Objective function}
 
 The objective of the ILP is to maximize to total number of cardinality, which has been shown in Equation \ref{obj}.
-To express it in the ILP fashion, we write it as follows. The index ``2'' is omitted, thus the objective function becomes the expected number of matched edges.
+We write it in ILP fashion as follows.
 
 \begin{eqnarray}
 	obj&=&\sum_{i=1}^{m}p*(1-p)^{o_i}\label{simple}\\
@@ -229,10 +222,10 @@ To express it in the ILP fashion, we write it as follows. The index ``2'' is omi
 	&=& mp+p*\sum_{i=1}^{m}\sum_{j=1}^{m}((1-p)^j-(1-p)^{j-1})l_{ij}\label{fobj}
 \end{eqnarray}
 
-In equation \ref{fobj}, the objective function becomes a linear function, such that it can be used in the ILP.
-The current problem is how to make $l_{ij}$ an indicator for $o_i\geq j$.
+In equation \ref{fobj}, the objective function $obj$ becomes a linear function, such that it can be optimized by the ILP.
+The current problem is how to make $l_{ij}$ work as an indicator for $o_i\geq j$.
 
-As stated before, the solution of the ILP only make sense when the objective function $obj$ has been maximized.
+As stated before, the solution of the ILP only makes sense when the objective function $obj$ has been maximized.
 So, we only need to add the following constraint to restrict $l_{ij}$.
 \begin{equation}
 o_i\leq j-1+l_{ij}*|E|\label{lcon}
@@ -271,11 +264,9 @@ Further, we omitted the $\delta_{ij}$'s for disjoint $e_i$ and $e_j$.
 These two steps ensure the number of entries to be $O(|E||V|)$.
 We will discuss the complexity problem later.
 
-\subsection{Mapping to ESD}
-We note that when the objective function is not maximized, the values of variables correspond to nothing useful for serial dictatorship.
-However, when the objective function, things become different.
-Now, we are going to show how to map the solution of the ILP to the optimal sequence $S$ for ESD.
-The method is as follows.
+\subsection{Mapping to the optimum sequence}
+We note that when the objective function is not maximized, a feasible solution of the ILP may not correspond to a feasible sequence for serial dictatorship.
+However, when the objective function is maximized, the optimum solution of the ILP can be mapped to a feasible sequence for serial dictatorship as follows.
 
 \textbf{Mapping process: }First, we define a function $o$ satisfying $o(e_i)=o_i^*$. 
 Note that we reuse the $o$ for the same meaning.
