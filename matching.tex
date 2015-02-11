@@ -21,7 +21,7 @@
 \newtheorem{lemma}{Lemma}
 \newtheorem{property}{Property}
 
-\title {OptOrder: optimum serial dictatorship in stochastic matching}
+\title {Optimum matching policy in stochastic matching without feedbacks}
 \author {Someone}
  \begin{document}
 % The file aaai.sty is the style file for AAAI Press
@@ -39,24 +39,25 @@ Otherwise, the edge can not be matched and one end of the edge will stay in the 
 The goal is to match more existing edges.
 Previous literature focus on finding bounds on settings with many parameters.
 However, these bounds are usually meaningless in simple settings.
-Even in simple settings, finding the optimum policy to match meets great difficulties mainly from two aspects.
+Even in many simple settings, finding the optimum policy to match meets great difficulties mainly from two aspects.
 First, there is no evidence that the optimal policy can be expressed in polynomial space.
 Second, collecting the probabilities usually incurs considerable costs.
 
-We study a novel setting where the market does not know whether an edge exists after matching and the patience is defined in a special way.
-The goal in our setting is to find the optimum sequence for serial dictatorship that maximizes the number of matched edges.
+We study a novel setting where the market does not know whether an edge exists after matching and the patience is defined in a new way.
+The goal in our setting is to find the optimum matching policy that maximizes the number of matched edges.
 We solve this problem via integer linear programming (ILP).
-Our well designed ILP uses only $O(|V||E|)$ entries and outperforms the enumeration algorithm a lot.
-Actually, our setting is related to a quite general setting  at a certain degree.
+Our well-designed ILP uses only $O(|V||E|)$ entries and outperforms the enumeration algorithm a lot.
 Although our work is for a quite specific setting, we move forward the first solid step towards ``optimum'' in the field of stochastic matching.
 
 \end{abstract}
 
 \section{Introduction}
 
-An active line of study on matching problems has been conducted since 1970s~\cite{keylist} with applications on stable marriage problems, stable roommate problems, kidney exchange etc.
+Study on matching problems have dates back to 1970s~\cite{keylist}, which nowadays has many applications, such as stable marriage problems, stable roommate problems, kidney exchange etc.
 In traditional matching settings, properties like stability, strategy-proof and social welfare maximizing are desired.
 However, during the last decade, inspired by applications such as kidney exchange and online dating, more attention has been attracted to stochastic settings.
+In such settings, stability and strategy-proof are hard to be well-defined.
+People care more about social welfare.
 
 \cite{chen2009approximating} defines a model ``stochastic matching'' and starts an active line of study on worst case bounds on related problems\cite{adamczyk2011improved,costello2012stochastic,poloczek2012randomized,goel2012matching,bansal2012lp}.
 They share some common assumptions in their models.
@@ -64,58 +65,55 @@ The stochastic matching is modeled in a graph $G=(V,E)$.
 Each edge $e$ has a probability to be existing.
 Otherwise, the edge is fake.
 There exists a matching system that can prob an edge to match.
-When an existing edge is probed, it will confirm the match and will never be separated.
+When an existing edge is probed, it will confirm the match and will never be broken.
 When a fake edge is probed, it will deny the match and the edge is removed from the graph.
 The goal of the matching system is to maximize the number of matched edges or the total weight. 
 Many variants have been studied in this setting, such as adding weights on vertices, probing an edge or a matching, setting the patiences, matching with eyes closed and matching in bipartite or general graphs\footnote{Often, more than one variants are usually considered in one paper at the same time, so we list the related work at the beginning of this paragraph.}.
 All these study focus on finding bounds for the worst case compared to the optimum policy or the offline optimal solution.
-However, for the most simple setting where all the existing probabilities are the same, no weights and no patiences setting, none of the algorithms above can be significantly better than serial dictatorship following a random order.
+However, for the simple settings where all the existing probabilities are the same, no weights and no patiences setting, none of the algorithms above can be significantly better than serial dictatorship following a random order.
 The current settings face two main drawbacks that prevent it from practical use.
 
 First, to know the exact probability of a prob being accepted is difficult.
 Typically, in order to know the exact  existing probabilities, the market needs to collect many data and conduct careful analyses on historical data.
 It is worthy in some important markets like kidney exchange market~\cite{dickerson2013failure,dickerson2015futurematch}.
 However, in many less important markets, collecting existing probabilities is quite costly and unworthy.
-Similar to online dating problem, let us consider a friend recommendation problem.
+Now, let us consider a dating problem.
 Someone (called Alice) has many friends, $x$ of them are single boys and $y$ are single girls.
 Alice wants to introduce boys to girls for marriage.
 She wants to maximize the number of matched couples.
 Every boy or girl has some requirements that must be satisfied.
 However, even though a boy and a girl satisfy each other's requirements, they may still not be willing to match.
-In this case, it is hard and costly for Alice to survey the acceptance ratio of each pair.
-What Alice does have may be the estimated average acceptance ratios of each pair.
+In this case, it is hard and costly for Alice to survey the acceptance ratio (existing probability in the model) of each pair.
+What Alice does have may be the estimated average acceptance ratio of each pair.
 Such applications motivate us to study the settings where all the existing probabilities are unique.
 Similar problems also appear in other applications like roommate problem~\cite{roth1982incentive}, but never serious considered to the best of our knowledge.
 
 Second, as mentioned above, most study focus on giving worst case bounds. 
-The main difficulty preventing people to desire the optimum solution is that the optimal solution maybe not able to be expressed in polynomial space.
-Even though you have already gotten a sequence for serial dictatorship (note that the optimum solution may be be implementable by serial dictatorship), it is still hard to know the expected number of matched edges. 
+The main difficulty preventing people to desire the optimum solution is that the optimum solution maybe not able to be expressed in polynomial space.
+Even though you have already gotten a sequence for serial dictatorship (note that the optimum solution may not be implementable by serial dictatorship), it is still hard to know the expected number of matched edges. 
 
-Motivated by the two drawbacks above, we study a novel setting with identical existing properties for edges and a P-time solvable expression for the number of expected matched agents.
+Motivated by the two drawbacks above, we study a novel setting with identical existing properties for edges and a solvable expression for the number of expected matched agents.
 For short, we use the \textit{payoff} of a matching to denote the number of expected matched agents.
-Our setting is inspired by boy/girl friends recommendation.
+Our setting is inspired by the dating problem mentioned above.
+It is often the case that when a boy and a girl fall in love with each other, they will not tell it to Alice before finally deciding, but they will reject others.
 In our setting, the matching market probs one edge per time.
 The existing probabilities of edges are the same.
 We assume that the market cannot get feedbacks from the matched agents (vertices) in a short time because they are not willing to make it known to others.
-We assume that each agents has two status \textit{active} or \textit{upset}.
-Typically, an agent becomes upset because she is assigned to some matched agent and disappointed to the matching system.
-When an agent becomes upset, she will always be upset and rejects all the probs. 
-When an edge $e_{ij}$ (connecting two agents $v_i$ and $v_j$) is probed,
-\begin{itemize}
-	\item If the two agents $v_i$ and $v_j$ are unmatched, $e_{ij}$ is matched with probability $p$
-	\item  If both $v_i$ and $v_j$ have been matched, nothing happens.
-	\item If $v_i$ (or $v_j$) is unmatched but the other has been matched, $v_i$ becomes upset with probability $p$.
-\end{itemize}
-Our goal is to find the optimum probing sequence.
+We assume that each agents has two status \textit{active} or \textit{inactive}.
+Typically, an agent becomes inactive because she has been tired of probing or has been matched.
+We assume the probability of becoming inactive after each probing is a constant $p$.
+When an agent becomes inactive, she will always be inactive and rejects all the probs. 
+When an edge between two active agents is probed, it will be matched with constant probability $r\leq p$
+Our goal is to find the optimum matching policy.
+We find that the optimum matching policy is exactly the maximum serial dictatorship and the serial dictatorship can be solved by an integer linear program on a enlarged feasible space.
 
-Actually, our setting is closely related to the setting of stochastic matching with equal existing probabilities, no patiences and no weights, called \textit{the general setting}. On the same graph, the payoff of our algorithm is also the lower bound of the optimum payoff of serial dictatorship in the general setting. 
 
-The following part of this paper is organized as follows. Section 2 defines the serial dictatorship and show some fundamental good properties of it. Section 3 shows the construction of the integer linear programming step by step and prove its correctness. Section 4 explores methods to expand our algorithm to larger graphs. Section 5 shows our experimental results. Section 6 concludes this paper.
+The following part of this paper is organized as follows. Section 2 defines the preliminaries and show some fundamental good properties of serial dictatorship. Section 3 shows the construction of the integer linear programming step by step and prove its correctness. Section 4 explores methods to expand our algorithm to larger graphs. Section 5 shows our experimental results. Section 6 concludes this paper.
 
 
 \section{The settings}
 
-In this section, we will describe our model and the serial dictatorship. After that, some desired properties of serial dictatorship are discussed.
+In this section, we will describe our model and the serial dictatorship. After that, we will show that matching by serial dictatorship with the best sequence is the optimum policy.
 
 \subsection{The model}
 
