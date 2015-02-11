@@ -12,6 +12,7 @@
 \usepackage{balance}
 \usepackage{amsmath}
 \usepackage{xcolor}
+\usepackage{slashbox}
 \newtheorem{theorem}{Theorem}%[section]
 \newtheorem{proposition}{Proposition}
 \newenvironment{proof}{{Proof:}}{\hfill\rule{2mm}{2mm}}
@@ -53,7 +54,7 @@ Although our work is for a quite specific setting, we move forward the first sol
 
 \section{Introduction}
 
-Study on matching problems have dates back to 1970s~\cite{keylist}, which nowadays has many applications, such as stable marriage problems, stable roommate problems, kidney exchange etc.
+Research on matching markets dates back to 1970s~\cite{keylist}, which afterwards has many applications, such as stable marriage problems, stable roommate problems, kidney exchange etc.
 In traditional matching settings, properties like stability, strategy-proof and social welfare maximizing are desired.
 However, during the last decade, inspired by applications such as kidney exchange and online dating, more attention has been attracted to stochastic settings.
 In such settings, stability and strategy-proof are hard to be well-defined.
@@ -238,7 +239,7 @@ We write it in ILP fashion as follows.
 	&= & r*\sum_{i=1}^{m} ((1-p)^{o_i}-(1-p)^{o_{i}-1}+(1-p)^{o_{i}-1}-\nonumber\\
 	&&(1-p)^{o_{i}-2}+\ldots-(1-p)+(1-p)-1+1)\\
 	&=& mr+r\sum_{i=1}^{m}\sum_{j=1}^{o_i}((1-p)^j-(1-p)^{j-1})\\
-	&=& mp+r\sum_{i=1}^{m}\sum_{j=1}^{m}((1-p)^j-(1-p)^{j-1})l_{ij}\label{fobj}
+	&=& mr+r\sum_{i=1}^{m}\sum_{j=1}^{m}((1-p)^j-(1-p)^{j-1})l_{ij}\label{fobj}
 \end{eqnarray}
 
 In equation \ref{fobj}, the objective function $obj$ becomes a linear function, such that it can be optimized by the ILP.
@@ -466,8 +467,6 @@ To get $pr_i$, one needs to enumerate all the subsets of $N(i)$.
 However, for any $i$, $pr_i$ is bounded by $p$.
 So the objective function of our setting $obj(S)$ when $r=0$ is a lower bound for $obj'(S)$.
 By optimizing the objective function in our setting, we can ensure the payoff of the basic setting to be not so bad.
-Actually, our experiments will show that applying the optimal sequence in our setting directly to serial dictatorship in the basic setting yield a significantly better payoff than serial dictatorship on a random sequence. 
- 
 
 \section{Experiments}
 
@@ -481,7 +480,7 @@ All our experiments are conducted on a common PC with a quad-core CPU and 4G RAM
 We use CPLEX as our ILP solver.
 
 As the running times of all the algorithms are not significantly relied on the leaving probability $p$ (we confirm this by some experiments), we set  $p$ to be 0.7.
-As for the probability of accepting a prob $r$, it definitely does not affect running time. We just set $r=p=0.7$ to meets the requirements of the experiments in the basic setting.
+As for the probability of accepting a prob $r$, it definitely does not affect running time. We just set $r=p=0.7$.
 
 \subsection{Scalability}
 
@@ -530,13 +529,33 @@ We set $n=10$, because only under this condition, the graphs with $|V||E|\approx
 Under such condition, our algorithm can often solve instances with $m=20$ within 1 minutes.
 Although the scalability of our algorithm is far from perfect., it has been much better than enumeration with the help of a highly non-trivial ILP.
 
-\subsection{Experiments for the basic setting}
+\subsection{Payoff comparison}
 
-In the basic setting referred in Section \ref{sec:basic}, Algorithm \ref{alg:full} also works well in finding a good sequence for serial dictatorship.
-We explore the performance of our algorithm at a larger scale with the help of force mapping referred in Section \ref{sec:force} compared to serial dictatorship according to a random sequence.
-The maximum running time for our ILP is set to be 50 seconds. We test the cases where $|V|=10,20,\ldots,50$ and $|E|\approx|V|^{1.5}$. For each case, we generate 20 instances and count the average of the two payoffs.
+In our setting, Algorithm \ref{alg:full} is able to generate the optimum sequence.
+To show the importance of the ``optimum'', we compare our algorithms with some other methods for generating the sequence.
+We use the following two algorithms as our baselines.
+\begin{itemize}
+	\item Random algorithm: Run ESD on a random sequence.
+	\item Greedy algorithm: sort all the edges according to the total degrees of their two ends from low to high. Use the sorted sequence as the input of the ESD algorithm. Intuitively, this is motivated by the observation that an edge tends to have less bad effects on others if the total degree of its two ends is small.
+\end{itemize}
+We test our algorithm and the two baselines on 4 cases, where $|V|=10$ and $|E|=14,16,18,20$.
 
+\begin{table}
+	\caption{Payoff comparison between algorithms}
+	\label{tab3}
+	\begin{tabular}{c|cccc}
+		\hline
+		$|E|$ & 14  & 16 & 18 & 20\\ \hline
+		random& 2.698& 2.702 & 2.702 & 2.636\\
+		greedy & 2.988& 2.960& 2.869& 2.757\\
+		optimum & 3.593 & 3.691 & 3.738 & 3.801\\ \hline
+	\end{tabular}
+\end{table}
 
+Table \ref{tab3} shows the comparison between the three algorithms. 
+From the results, we conclude that the optimum payoff (expected matched edges) is significantly better than the two baselines.
+The greedy algorithm becomes worse as the number of edges increase.
+The random algorithm is always the worst among these three algorithms.
 \section{Conclusion}
 In the field of stochastic matching, previous study concentrates on worst-case bounds, rather than ``optimum''.
 We simplify the original setting by forbidding feedbacks and change the assumption on patience, making it possible to find a more efficient way to get the optimal policy.
@@ -544,8 +563,8 @@ Our setting is motivated by the dating problem.
 In our setting, the optimum matching policy can be proved to be serial dictatorship.
 To find the best sequence for serial dictatorship, we propose a novel ILP, which reduces its dimensions by enlarging the solution space without changing the optimal solution.
  
-Our algorithm performs much better than enumeration in our setting.
-In a basic setting without patiences, our experimental results show that our solution can help to find a better sequence than a random one. 
+Our algorithm performs much faster than enumeration in our setting.
+Further, we compare our algorithm with some other algorithms, showing that the importance of the optimal solution.
 
 \newpage
 \bibliographystyle{named}
