@@ -121,9 +121,9 @@ In this section, we will describe our model and the serial dictatorship. After t
 Our problem is modeled in an undirected graph $G=(V,E)$, $V=\{v_1,v_2,\ldots,v_n\}$ denotes the set of agents. $e_{ij}\in E$ denotes an edge between $v_i$ and $v_j$. In the following analyses, elements in $E$ are also renumbered as $e_1,e_2,\ldots,e_{|E|}$. 
 For any vertex $v_i\in V$, it has two states, \textit{active} and \textit{inactive}.
 The initial states are active.
-When an edge $e_ij$ is probed, $v_i$ (or $v_j$) will choose one from the following three actions.
+When an edge $e_{ij}$ is probed, $v_i$ (or $v_j$) will choose one from the following actions.
 \begin{itemize}
-	\item if $v_i$ inactive, $e_ij$ will not be matched.
+	\item if $v_i$ inactive, $e_{ij}$ will not be matched.
 	\item if $v_i$ is active and $v_j$ is inactive, $v_i$ becomes inactive with probability $p$, $e_{ij}$ will not be matched.
 	\item if both $v_i$ and $v_j$ are active
 	\begin{itemize}
@@ -272,7 +272,6 @@ In our ILP, $l_{ij}$ only appears in the constraint above and the objective func
 Now we are ready to conclude the ILP we used to solve the optimal serial as follows.
 
 \begin{eqnarray}
-\tiny
 \text{Maximize:}&& mr+r\sum_{i=1}^{m}\sum_{j=1}^{n_i}((1-p)^j-(1-p)^{j-1})l_{ij}\label{stobj}\\
 \text{Subject to:}&& 1.~\delta_{ij}+\delta_{ji}=1, \forall e_i,e_j\in E, e_i\cap e_j\neq \emptyset \label{con1}\\
 && 2.~o_i\leq j-1+l_{ij}|E|,\nonumber\\&&~~~i=1,2,\ldots,m, j=1,2,,\ldots,n_i\label{ni}\\
