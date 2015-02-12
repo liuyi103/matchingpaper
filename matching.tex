@@ -38,7 +38,7 @@ The market probs edges one by one (edge-probing setting).
 If an edge exists, it will be matched and both ends will leave the market.
 Otherwise, the edge can not be matched and one end of the edge will stay in the market only if she still has patience.
 The goal is to match more existing edges.
-Previous literature focus on finding bounds on settings with many parameters.
+Previous literature focus on finding bounds on settings with various parameters.
 However, these bounds are usually meaningless in simple settings.
 Even in many simple settings, finding the optimum policy to match meets great difficulties mainly from two aspects.
 First, there is no evidence that the optimal policy can be expressed in polynomial space.
@@ -47,16 +47,16 @@ Second, collecting the probabilities usually incurs considerable costs.
 We study a novel setting where the market does not know whether an edge exists after matching and the patience is defined in a new way.
 The goal in our setting is to find the optimum matching policy that maximizes the number of matched edges.
 We solve this problem via integer linear programming (ILP).
-Our well-designed ILP uses only $O(|V||E|)$ entries and outperforms the enumeration algorithm a lot.
+Our well-designed ILP uses only $O(|V||E|)$ entries and outperforms the enumeration algorithm significantly.
 Although our work is for a quite specific setting, we move forward the first solid step towards ``optimum'' in the field of stochastic matching.
 
 \end{abstract}
 
 \section{Introduction}
 
-Research on matching markets dates back to 1970s~\cite{keylist}, which afterwards has many applications, such as stable marriage problems, stable roommate problems, kidney exchange etc.
+Research on matching markets dates back to 1960s~\cite{gale1962college}, which has many applications, such as college admission, stable marriage problems and stable roommate problem~\cite{roth1982incentive}.
 In traditional matching settings, properties like stability, strategy-proof and social welfare maximizing are desired.
-However, during the last decade, inspired by applications such as kidney exchange and online dating, more attention has been attracted to stochastic settings.
+However, during the last decade, inspired by applications such as kidney exchange~\cite{roth2003kidney,roth2005pairwise}, adwords~\cite{mehta2007adwords} and online dating~\cite{hitsch2010matching}, more attention has been attracted to stochastic settings~\cite{awasthi2009online}.
 In such settings, stability and strategy-proof are hard to be well-defined.
 People care more about social welfare.
 
@@ -66,12 +66,12 @@ The stochastic matching is modeled in a graph $G=(V,E)$.
 Each edge $e$ has a probability to be existing.
 Otherwise, the edge is fake.
 There exists a matching system that can prob an edge to match.
-When an existing edge is probed, it will confirm the match and will never be broken.
-When a fake edge is probed, it will deny the match and the edge is removed from the graph.
+When an existing edge is probed, it confirms the match and will never be broken.
+When a fake edge is probed, it rejects the match and the edge is removed from the graph.
 The goal of the matching system is to maximize the number of matched edges or the total weight. 
-Many variants have been studied in this setting, such as adding weights on vertices, probing an edge or a matching, setting the patiences, matching with eyes closed and matching in bipartite or general graphs\footnote{Often, more than one variants are usually considered in one paper at the same time, so we list the related work at the beginning of this paragraph.}.
+Many variants have been studied in this setting, such as adding weights on vertices, probing an edge or a matching, setting the patiences, matching with eyes closed and matching in bipartite or general graphs\footnote{Often, more than one variants are considered in one paper at the same time, so we list the related work at the beginning of this paragraph.}.
 All these study focus on finding bounds for the worst case compared to the optimum policy or the offline optimal solution.
-However, for the simple settings where all the existing probabilities are the same, no weights and no patiences setting, none of the algorithms above can be significantly better than serial dictatorship following a random order.
+However, for the simple settings where all the existing probabilities are the same and weights are not considered, none of the algorithms above can be significantly better than serial dictatorship following a random order.
 The current settings face two main drawbacks that prevent it from practical use.
 
 First, to know the exact probability of a prob being accepted is difficult.
@@ -87,29 +87,29 @@ However, even though a boy and a girl satisfy each other's requirements, they ma
 In this case, it is hard and costly for Alice to survey the acceptance ratio (existing probability in the model) of each pair.
 What Alice does have may be the estimated average acceptance ratio of each pair.
 Such applications motivate us to study the settings where all the existing probabilities are unique.
-Similar problems also appear in other applications like roommate problem~\cite{roth1982incentive}, but never serious considered to the best of our knowledge.
+Expensiveness on surveying also appears in other applications like roommate problem, but never serious considered to the best of our knowledge.
 
 Second, as mentioned above, most study focus on giving worst case bounds. 
 The main difficulty preventing people to desire the optimum solution is that the optimum solution maybe not able to be expressed in polynomial space.
-Even though you have already gotten a sequence for serial dictatorship (note that the optimum solution may not be implementable by serial dictatorship), it is still hard to know the expected number of matched edges. 
+Note that the optimum solution may not be implementable by serial dictatorship. 
 
-Motivated by the two drawbacks above, we study a novel setting with identical existing properties for edges and a solvable expression for the number of expected matched agents.
+Motivated by the two drawbacks above, we study a novel setting with identical existing probabilities for edges and a simple expression for the number of expected matched agents.
 For short, we use the \textit{payoff} of a matching to denote the number of expected matched agents.
-Our setting is inspired by the dating problem mentioned above.
+Our setting is inspired by the dating problem mentioned before.
 It is often the case that when a boy and a girl fall in love with each other, they will not tell it to Alice before finally deciding, but they will reject others.
-In our setting, the matching market probs one edge per time.
+In our setting, the matching market probs one edge each time.
 The existing probabilities of edges are the same.
 We assume that the market cannot get feedbacks from the matched agents (vertices) in a short time because they are not willing to make it known to others.
 We assume that each agents has two status \textit{active} or \textit{inactive}.
-Typically, an agent becomes inactive because she has been tired of probing or has been matched.
+Typically, an agent becomes inactive because she has been tired of being probed or has been matched.
 We assume the probability of becoming inactive after each probing is a constant $p$.
 When an agent becomes inactive, she will always be inactive and rejects all the probs. 
 When an edge between two active agents is probed, it will be matched with constant probability $r\leq p$
 Our goal is to find the optimum matching policy.
-We find that the optimum matching policy is exactly the maximum serial dictatorship and the serial dictatorship can be solved by an integer linear program on a enlarged feasible space.
+We find that the optimum matching policy is by maximum serial dictatorship and the optimum sequence for serial dictatorship can be solved by an integer linear program on an enlarged feasible space.
 
 
-The following part of this paper is organized as follows. Section 2 defines the preliminaries and show some fundamental good properties of serial dictatorship. Section 3 shows the construction of the integer linear programming step by step and prove its correctness. Section 4 explores methods to expand our algorithm to larger graphs. Section 5 shows our experimental results. Section 6 concludes this paper.
+The following part of this paper is organized as follows. Section 2 defines the preliminaries and show some fundamental good properties of serial dictatorship. Section 3 shows the construction of the integer linear programming step by step and prove its correctness. Section 4 explores the extensions of our algorithm. Section 5 shows our experimental results. Section 6 concludes this paper.
 
 
 \section{The settings}
@@ -149,11 +149,11 @@ It is quite natural and the performance of ESD depends on the sequence $S$.
 		The graph $G=(V,E)$ and an ordered sequence of $E$, denoted by $S=s_1,s_2,\ldots,s_m$.
 		\Ensure A set of disjoint edges $A$, such that each two agents connected by an edge in $A$ agree to match. 
 		\State $A=\emptyset$
-		\For $i=1,2,\ldots,m$
+		\For{$i=1,2,\ldots,m$}
 		\State Let $v_x$ and $v_y$ be the two agents connected by $s_i$
-		\If $v_x\in V$ and $v_y\in V$
+		\If{$v_x\in V$ and $v_y\in V$}
 		\State Prob $v_x$ and $v_y$ whether they agree to match with each other.
-		\If Both $v_x$ and $v_y$ accept to match
+		\If {Both $v_x$ and $v_y$ accept to match}
 		\State Put $s_i$ into $A$
 		\State Remove $v_x$ and $v_y$ from $V$
 		\EndIf
@@ -235,10 +235,11 @@ The objective of the ILP is to maximize to total number of cardinality, which ha
 We write it in ILP fashion as follows.
 
 \begin{eqnarray}
+	\scriptsize
 	obj&=&\sum_{i=1}^{m}r*(1-p)^{o_i}\label{simple}\\
 	&= & r*\sum_{i=1}^{m} ((1-p)^{o_i}-(1-p)^{o_{i}-1}+(1-p)^{o_{i}-1}-\nonumber\\
-	&&(1-p)^{o_{i}-2}+\ldots-(1-p)+(1-p)-1+1)\\
-	&=& mr+r\sum_{i=1}^{m}\sum_{j=1}^{o_i}((1-p)^j-(1-p)^{j-1})\\
+	&&(1-p)^{o_{i}-2}+\ldots-(1-p)+(1-p)-1+1)\nonumber\\
+	&=& mr+r\sum_{i=1}^{m}\sum_{j=1}^{o_i}((1-p)^j-(1-p)^{j-1})\nonumber\\
 	&=& mr+r\sum_{i=1}^{m}\sum_{j=1}^{m}((1-p)^j-(1-p)^{j-1})l_{ij}\label{fobj}
 \end{eqnarray}
 
@@ -271,6 +272,7 @@ In our ILP, $l_{ij}$ only appears in the constraint above and the objective func
 Now we are ready to conclude the ILP we used to solve the optimal serial as follows.
 
 \begin{eqnarray}
+\tiny
 \text{Maximize:}&& mr+r\sum_{i=1}^{m}\sum_{j=1}^{n_i}((1-p)^j-(1-p)^{j-1})l_{ij}\label{stobj}\\
 \text{Subject to:}&& 1.~\delta_{ij}+\delta_{ji}=1, \forall e_i,e_j\in E, e_i\cap e_j\neq \emptyset \label{con1}\\
 && 2.~o_i\leq j-1+l_{ij}|E|,\nonumber\\&&~~~i=1,2,\ldots,m, j=1,2,,\ldots,n_i\label{ni}\\
@@ -370,10 +372,12 @@ Formally, it is stated as follows.
 		Now, we consider the point in the feasible space where $l_{ij}=1$ if and only if $o_i\geq j$.
 		The value of the objective function at this point is as follows.
 		\begin{eqnarray}
+		\tiny
 		obj_2&=& obj_1+p(1-p)^{o_j-1}+p(1-p)^{o_i+1}\nonumber\\&&-p(1-p)^{o_j}-p(1-p)^{o_i}
 		\end{eqnarray} 
 		Thus, we have:
 		\begin{eqnarray}
+		\tiny
 		obj_2-obj_1&=& p(1-p)^{o_j-1}+p(1-p)^{o_i+1}\nonumber\\&&-p(1-p)^{o_j}-p(1-p)^{o_i}\nonumber\\
 		&=& p(1-p)^{o_j-1}(1+(1-p)^{o_i-o_j+2}\nonumber\\&& -(1-p)-(1-p)^{o_i-o_j+1})\nonumber\\
 		&>& 0\nonumber
@@ -439,7 +443,7 @@ However, our experiments will show that force mapping can yield good payoffs.
 
 In our setting, we have two major adjustments on the traditional setting to make the optimum policy solvable at a certain degree.
 First, we assume that the market does not get any feedbacks.
-This assumption restrict the optimum policy to be non-adaptive.
+This assumption restricts the optimum policy to be non-adaptive.
 Second, we assume that after one agent is probed, she has a fixed probability to leave the market.
 This assumption reduce the difficulty in expressing the payoff of a policy.
 However, our work can also contribute to the solving of traditional settings.
@@ -462,18 +466,15 @@ Then, the payoff of the serial dictatorship on $S$ is:
 obj'(S)=\sum_{i=1}^m pr_i
 \end{equation}
 
-We note that in the Equation \ref{pr}, the computational complexity is exponential.
-To get $pr_i$, one needs to enumerate all the subsets of $N(i)$.
+We note that in the Equation \ref{pr}, $pr_i$'s depends on each other.
 However, for any $i$, $pr_i$ is bounded by $p$.
-So the objective function of our setting $obj(S)$ when $r=0$ is a lower bound for $obj'(S)$.
+So the objective function of our setting $obj(S)$ when $r=p$ is a lower bound for $obj'(S)$.
 By optimizing the objective function in our setting, we can ensure the payoff of the basic setting to be not so bad.
 
 \section{Experiments}
 
-Our experimental results consists of two parts.
-In the first part, we show the running time performance of Algorithm \ref{alg:full}.
-Our results show that our algorithm outperforms naive enumeration significantly and can scale up to the case where $|V||E|=200$.
-In the second part, we test the sequence generated by our algorithm in the basic setting and compare it to serial dictatorship on a random sequence. Our experimental results show that our sequence is much better than a random one.
+In our experiments, we test Algorithm \ref{alg:full} on both computational time and payoff.
+Algorithm \ref{alg:full} can deal with a graph with $|V||E|$ up to 200 and its payoff (optimum) is much better than simple algorithms.
 
 \subsection{Experimental settings}
 All our experiments are conducted on a common PC with a quad-core CPU and 4G RAM.
@@ -486,6 +487,8 @@ As for the probability of accepting a prob $r$, it definitely does not affect ru
 
 As there is no previous literature on finding the optimum sequence in our setting, we compare our algorithm to the most naive algorithm, which enumerates all the permutations of the edges and finds the best of them.
 \begin{table}
+	\tiny
+	\centering
 	\caption{Running time comparison between Algorithm \ref{alg:full} and the naive algorithm.}
 	\label{tab1}
 	\begin{tabular}{ccccc}
@@ -511,6 +514,8 @@ However, it is reasonable because the graph is too sparse and many instances may
 
 \begin{table}
 	\caption{Running time of Algorithm \ref{alg:full} for larger instances.}
+	\tiny
+	\centering
 	\label{tab2}
 	\begin{tabular}{ccccc}
 		\hline
@@ -543,6 +548,8 @@ We test our algorithm and the two baselines on 4 cases, where $|V|=10$ and $|E|=
 \begin{table}
 	\caption{Payoff comparison between algorithms}
 	\label{tab3}
+	\tiny
+	\centering
 	\begin{tabular}{c|cccc}
 		\hline
 		$|E|$ & 14  & 16 & 18 & 20\\ \hline
@@ -558,13 +565,11 @@ The greedy algorithm becomes worse as the number of edges increase.
 The random algorithm is always the worst among these three algorithms.
 \section{Conclusion}
 In the field of stochastic matching, previous study concentrates on worst-case bounds, rather than ``optimum''.
-We simplify the original setting by forbidding feedbacks and change the assumption on patience, making it possible to find a more efficient way to get the optimal policy.
+We simplify the original setting by forbidding feedbacks and changing the assumption on patience, making it possible to find a more efficient way to get the optimum policy.
 Our setting is motivated by the dating problem.
-In our setting, the optimum matching policy can be proved to be serial dictatorship.
-To find the best sequence for serial dictatorship, we propose a novel ILP, which reduces its dimensions by enlarging the solution space without changing the optimal solution.
- 
+In our setting, the optimum matching policy can be proved to be serial dictatorship, whose optimum sequence can be solved by a well-designed ILP.
 Our algorithm performs much faster than enumeration in our setting.
-Further, we compare our algorithm with some other algorithms, showing that the importance of the optimal solution.
+Further, we compare our algorithm with some other algorithms, showing the importance of the optimal solution.
 
 \newpage
 \bibliographystyle{named}
